@@ -1,6 +1,6 @@
 {
   "name": "libp2p-gossipsub",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "A typescript implementation of gossipsub",
   "leadMaintainer": "Cayman Nava <caymannava@gmail.com>",
   "main": "src/index.js",
@@ -95,8 +95,8 @@
     "Mikerah <mikerahqc@protonmail.com>",
     "Tuyen Nguyen <vutuyen2636@gmail.com>",
     "Alex Potsides <alex@achingbrain.net>",
-    "Marin Petrunić <marin.petrunic@gmail.com>",
     "Lion - dapplion <35266934+dapplion@users.noreply.github.com>",
+    "Marin Petrunić <marin.petrunic@gmail.com>",
     "Gregory Markou <16929357+GregTheGreek@users.noreply.github.com>",
     "Alan Shaw <alan.shaw@protocol.ai>",
     "Tuyen <tuyen@wetrust.io>",
