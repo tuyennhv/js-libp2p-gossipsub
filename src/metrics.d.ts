@@ -243,7 +243,9 @@ export declare function getMetrics(register: MetricsRegister, topicStrToLabel: T
         error: RejectReason | ValidateError;
     }>;
     /** Track duplicate message delivery time */
-    duplicateMsgDelivery: Histogram<{
+    duplicateMsgDeliveryDelay: Histogram<LabelsGeneric>;
+    /** Total count of late msg delivery total by topic */
+    duplicateMsgLateDelivery: Gauge<{
         topic: TopicLabel;
     }>;
     /** Total times score() is called */
@@ -331,7 +333,7 @@ export declare function getMetrics(register: MetricsRegister, topicStrToLabel: T
     onMsgRecvPreValidation(topicStr: TopicStr): void;
     onMsgRecvResult(topicStr: TopicStr, status: MessageStatus): void;
     onMsgRecvInvalid(topicStr: TopicStr, reason: RejectReasonObj): void;
-    onDuplicateMsgDelivery(topicStr: TopicStr, deliveryDelayMs: number): void;
+    onDuplicateMsgDelivery(topicStr: TopicStr, deliveryDelayMs: number, isLateDelivery: boolean): void;
     onRpcRecv(rpc: IRPC, rpcBytes: number): void;
     onRpcSent(rpc: IRPC, rpcBytes: number): void;
     registerScores(scores: number[], scoreThresholds: PeerScoreThresholds): void;

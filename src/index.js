@@ -165,6 +165,7 @@ class Gossipsub extends libp2p_1.EventEmitter {
             mcacheLength: constants.GossipsubHistoryLength,
             mcacheGossip: constants.GossipsubHistoryGossip,
             seenTTL: constants.GossipsubSeenTTL,
+            gossipsubIWantFollowupTime: constants.GossipsubIWantFollowupTime,
             ...options,
             scoreParams: (0, score_1.createPeerScoreParams)(options.scoreParams),
             scoreThresholds: (0, score_1.createPeerScoreThresholds)(options.scoreThresholds)
@@ -229,7 +230,7 @@ class Gossipsub extends libp2p_1.EventEmitter {
         else {
             this.metrics = null;
         }
-        this.gossipTracer = new tracer_1.IWantTracer(this.metrics);
+        this.gossipTracer = new tracer_1.IWantTracer(this.opts.gossipsubIWantFollowupTime, this.metrics);
         /**
          * libp2p
          */

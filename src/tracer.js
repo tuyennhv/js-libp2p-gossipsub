@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.IWantTracer = void 0;
-const constants_1 = require("./constants");
 const utils_1 = require("./utils");
 const types_1 = require("./types");
 /**
@@ -13,8 +12,8 @@ const types_1 = require("./types");
  * These 'promises' are merely expectations of a peer's behavior.
  */
 class IWantTracer {
-    // eslint-disable-next-line no-useless-constructor
-    constructor(metrics) {
+    constructor(gossipsubIWantFollowupTime, metrics) {
+        this.gossipsubIWantFollowupTime = gossipsubIWantFollowupTime;
         this.metrics = metrics;
         /**
          * Promises to deliver a message
@@ -26,7 +25,7 @@ class IWantTracer {
          * Necessary to know if peers are actually breaking promises or simply sending them a bit later
          */
         this.requestMsByMsg = new Map();
-        this.requestMsByMsgExpire = 10 * constants_1.GossipsubIWantFollowupTime;
+        this.requestMsByMsgExpire = 10 * gossipsubIWantFollowupTime;
     }
     get size() {
         return this.promises.size;
@@ -50,7 +49,7 @@ class IWantTracer {
         const now = Date.now();
         // If a promise for this message id and peer already exists we don't update the expiry
         if (!expireByPeer.has(from)) {
-            expireByPeer.set(from, now + constants_1.GossipsubIWantFollowupTime);
+            expireByPeer.set(from, now + this.gossipsubIWantFollowupTime);
             if (this.metrics) {
                 this.metrics.iwantPromiseStarted.inc(1);
                 if (!this.requestMsByMsg.has(msgIdStr)) {

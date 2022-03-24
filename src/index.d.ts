@@ -60,6 +60,8 @@ export declare type GossipsubOpts = GossipsubOptsSpec & {
     scoreParams: Partial<PeerScoreParams>;
     /** peer score thresholds */
     scoreThresholds: Partial<PeerScoreThresholds>;
+    /** customize GossipsubIWantFollowupTime in order not to apply IWANT penalties */
+    gossipsubIWantFollowupTime: number;
     dataTransform?: DataTransform;
     metricsRegister?: MetricsRegister | null;
     metricsTopicStrToLabel?: TopicStrToLabel;

@@ -9,6 +9,7 @@ import { Metrics } from './metrics';
  * These 'promises' are merely expectations of a peer's behavior.
  */
 export declare class IWantTracer {
+    private readonly gossipsubIWantFollowupTime;
     private readonly metrics;
     /**
      * Promises to deliver a message
@@ -21,7 +22,7 @@ export declare class IWantTracer {
      */
     private readonly requestMsByMsg;
     private readonly requestMsByMsgExpire;
-    constructor(metrics: Metrics | null);
+    constructor(gossipsubIWantFollowupTime: number, metrics: Metrics | null);
     get size(): number;
     get requestMsByMsgSize(): number;
     /**
