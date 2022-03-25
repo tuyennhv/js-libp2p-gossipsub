@@ -125,7 +125,7 @@ export declare type Metrics = ReturnType<typeof getMetrics>;
 export declare function getMetrics(register: MetricsRegister, topicStrToLabel: TopicStrToLabel, opts: {
     gossipPromiseExpireSec: number;
     behaviourPenaltyThreshold: number;
-    minMeshMessageDeliveriesWindow: number;
+    maxMeshMessageDeliveriesWindow: number;
 }): {
     protocolsEnabled: Gauge<{
         protocol: string;

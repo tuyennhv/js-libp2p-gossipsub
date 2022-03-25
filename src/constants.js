@@ -1,6 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ACCEPT_FROM_WHITELIST_DURATION_MS = exports.ACCEPT_FROM_WHITELIST_MAX_MESSAGES = exports.ACCEPT_FROM_WHITELIST_THRESHOLD_SCORE = exports.ERR_TOPIC_VALIDATOR_IGNORE = exports.ERR_TOPIC_VALIDATOR_REJECT = exports.TimeCacheDuration = exports.GossipsubSeenTTL = exports.GossipsubIWantFollowupTime = exports.GossipsubMaxIHaveMessages = exports.GossipsubMaxIHaveLength = exports.GossipsubGraftFloodThreshold = exports.GossipsubOpportunisticGraftPeers = exports.GossipsubOpportunisticGraftTicks = exports.GossipsubDirectConnectInitialDelay = exports.GossipsubDirectConnectTicks = exports.GossipsubConnectionTimeout = exports.GossipsubMaxPendingConnections = exports.GossipsubConnectors = exports.GossipsubPruneBackoffTicks = exports.GossipsubPruneBackoff = exports.GossipsubPrunePeers = exports.GossipsubFanoutTTL = exports.GossipsubHeartbeatInterval = exports.GossipsubHeartbeatInitialDelay = exports.GossipsubGossipRetransmission = exports.GossipsubGossipFactor = exports.GossipsubDlazy = exports.GossipsubHistoryGossip = exports.GossipsubHistoryLength = exports.GossipsubDout = exports.GossipsubDscore = exports.GossipsubDhi = exports.GossipsubDlo = exports.GossipsubD = exports.GossipsubIDv11 = exports.GossipsubIDv10 = exports.FloodsubID = exports.minute = exports.second = void 0;
+exports.DEFAULT_METRIC_MESH_MESSAGE_DELIVERIES_WINDOWS = exports.ACCEPT_FROM_WHITELIST_DURATION_MS = exports.ACCEPT_FROM_WHITELIST_MAX_MESSAGES = exports.ACCEPT_FROM_WHITELIST_THRESHOLD_SCORE = exports.ERR_TOPIC_VALIDATOR_IGNORE = exports.ERR_TOPIC_VALIDATOR_REJECT = exports.TimeCacheDuration = exports.GossipsubSeenTTL = exports.GossipsubIWantFollowupTime = exports.GossipsubMaxIHaveMessages = exports.GossipsubMaxIHaveLength = exports.GossipsubGraftFloodThreshold = exports.GossipsubOpportunisticGraftPeers = exports.GossipsubOpportunisticGraftTicks = exports.GossipsubDirectConnectInitialDelay = exports.GossipsubDirectConnectTicks = exports.GossipsubConnectionTimeout = exports.GossipsubMaxPendingConnections = exports.GossipsubConnectors = exports.GossipsubPruneBackoffTicks = exports.GossipsubPruneBackoff = exports.GossipsubPrunePeers = exports.GossipsubFanoutTTL = exports.GossipsubHeartbeatInterval = exports.GossipsubHeartbeatInitialDelay = exports.GossipsubGossipRetransmission = exports.GossipsubGossipFactor = exports.GossipsubDlazy = exports.GossipsubHistoryGossip = exports.GossipsubHistoryLength = exports.GossipsubDout = exports.GossipsubDscore = exports.GossipsubDhi = exports.GossipsubDlo = exports.GossipsubD = exports.GossipsubIDv11 = exports.GossipsubIDv10 = exports.FloodsubID = exports.minute = exports.second = void 0;
 exports.second = 1000;
 exports.minute = 60 * exports.second;
 // Protocol identifiers
@@ -199,3 +199,7 @@ exports.ACCEPT_FROM_WHITELIST_MAX_MESSAGES = 128;
  * this peer up to this time duration.
  */
 exports.ACCEPT_FROM_WHITELIST_DURATION_MS = 1000;
+/**
+ * The default MeshMessageDeliveriesWindow to be used in metrics.
+ */
+exports.DEFAULT_METRIC_MESH_MESSAGE_DELIVERIES_WINDOWS = 1000;
