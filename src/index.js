@@ -2011,6 +2011,7 @@ class Gossipsub extends libp2p_1.EventEmitter {
         // Peer scores
         const scores = [];
         const scoreByPeer = new Map();
+        metrics.behaviourPenalty.reset();
         for (const peerIdStr of this.peers.keys()) {
             const score = this.score.score(peerIdStr);
             scores.push(score);

@@ -24,6 +24,7 @@ interface Histogram<Labels extends LabelsGeneric = never> {
     observe(value: number): void;
     observe(labels: Labels, values: number): void;
     observe(arg1: Labels | number, arg2?: number): void;
+    reset(): void;
 }
 interface AvgMinMax<Labels extends LabelsGeneric = never> {
     set(values: number[]): void;
