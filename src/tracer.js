@@ -12,8 +12,8 @@ const types_1 = require("./types");
  * These 'promises' are merely expectations of a peer's behavior.
  */
 class IWantTracer {
-    constructor(gossipsubIWantFollowupTime, metrics) {
-        this.gossipsubIWantFollowupTime = gossipsubIWantFollowupTime;
+    constructor(gossipsubIWantFollowupMs, metrics) {
+        this.gossipsubIWantFollowupMs = gossipsubIWantFollowupMs;
         this.metrics = metrics;
         /**
          * Promises to deliver a message
@@ -25,7 +25,7 @@ class IWantTracer {
          * Necessary to know if peers are actually breaking promises or simply sending them a bit later
          */
         this.requestMsByMsg = new Map();
-        this.requestMsByMsgExpire = 10 * gossipsubIWantFollowupTime;
+        this.requestMsByMsgExpire = 10 * gossipsubIWantFollowupMs;
     }
     get size() {
         return this.promises.size;
@@ -49,7 +49,7 @@ class IWantTracer {
         const now = Date.now();
         // If a promise for this message id and peer already exists we don't update the expiry
         if (!expireByPeer.has(from)) {
-            expireByPeer.set(from, now + this.gossipsubIWantFollowupTime);
+            expireByPeer.set(from, now + this.gossipsubIWantFollowupMs);
             if (this.metrics) {
                 this.metrics.iwantPromiseStarted.inc(1);
                 if (!this.requestMsByMsg.has(msgIdStr)) {
@@ -122,7 +122,7 @@ class IWantTracer {
     prune() {
         const maxMs = Date.now() - this.requestMsByMsgExpire;
         for (const [k, v] of this.requestMsByMsg.entries()) {
-            if (v >= maxMs) {
+            if (v < maxMs) {
                 // messages that stay too long in the requestMsByMsg map, delete
                 this.requestMsByMsg.delete(k);
             }
