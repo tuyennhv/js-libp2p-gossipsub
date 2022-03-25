@@ -217,11 +217,11 @@ class Gossipsub extends libp2p_1.EventEmitter {
             // in theory, each topic has its own meshMessageDeliveriesWindow param
             // however in lodestar, we configure it mostly the same so just pick the max of positive ones
             // (some topics have meshMessageDeliveriesWindow as 0)
-            const maxMeshMessageDeliveriesWindow = Math.max(...Object.values(opts.scoreParams.topics).map((topicParam) => topicParam.meshMessageDeliveriesWindow), constants.DEFAULT_METRIC_MESH_MESSAGE_DELIVERIES_WINDOWS);
+            const maxMeshMessageDeliveriesWindowMs = Math.max(...Object.values(opts.scoreParams.topics).map((topicParam) => topicParam.meshMessageDeliveriesWindow), constants.DEFAULT_METRIC_MESH_MESSAGE_DELIVERIES_WINDOWS);
             const metrics = (0, metrics_1.getMetrics)(options.metricsRegister, options.metricsTopicStrToLabel, {
                 gossipPromiseExpireSec: this.opts.gossipsubIWantFollowupTime / 1000,
                 behaviourPenaltyThreshold: opts.scoreParams.behaviourPenaltyThreshold,
-                maxMeshMessageDeliveriesWindow
+                maxMeshMessageDeliveriesWindowSec: maxMeshMessageDeliveriesWindowMs / 1000
             });
             metrics.mcacheSize.addCollect(() => this.onScrapeMetrics(metrics));
             for (const protocol of this.multicodecs) {

@@ -238,11 +238,11 @@ function getMetrics(register, topicStrToLabel, opts) {
             help: 'Time since the 1st duplicated message validated',
             labelNames: ['topic'],
             buckets: [
-                0.25 * opts.maxMeshMessageDeliveriesWindow,
-                0.5 * opts.maxMeshMessageDeliveriesWindow,
-                1 * opts.maxMeshMessageDeliveriesWindow,
-                2 * opts.maxMeshMessageDeliveriesWindow,
-                4 * opts.maxMeshMessageDeliveriesWindow
+                0.25 * opts.maxMeshMessageDeliveriesWindowSec,
+                0.5 * opts.maxMeshMessageDeliveriesWindowSec,
+                1 * opts.maxMeshMessageDeliveriesWindowSec,
+                2 * opts.maxMeshMessageDeliveriesWindowSec,
+                4 * opts.maxMeshMessageDeliveriesWindowSec
             ]
         }),
         /** Total count of late msg delivery total by topic */
