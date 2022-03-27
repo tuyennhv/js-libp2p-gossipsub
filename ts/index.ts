@@ -1019,6 +1019,13 @@ export default class Gossipsub extends EventEmitter {
   }
 
   /**
+   * Return score of a peer.
+   */
+  getScore(peerId: PeerIdStr): number {
+    return this.score.score(peerId)
+  }
+
+  /**
    * Send an rpc object to a peer with subscriptions
    */
   private sendSubscriptions(toPeer: PeerIdStr, topics: string[], subscribe: boolean): void {
@@ -1788,12 +1795,12 @@ export default class Gossipsub extends EventEmitter {
   }
 
   /**
-   * App layer publishes a message to peers.
+   * App layer publishes a message to peers, return number of peers this message is published to
    * Note: `async` due to crypto only if `StrictSign`, otherwise it's a sync fn.
    *
    * For messages not from us, this class uses `forwardMessage`.
    */
-  async publish(topic: TopicStr, data: Uint8Array): Promise<void> {
+  async publish(topic: TopicStr, data: Uint8Array): Promise<number> {
     const transformedData = this.dataTransform ? this.dataTransform.outboundTransform(topic, data) : data
 
     // Prepare raw message with user's publishConfig
@@ -1848,6 +1855,8 @@ export default class Gossipsub extends EventEmitter {
       // TODO: Add option to switch between emit per topic or all messages in one
       super.emit(topic, msg)
     }
+
+    return tosend.size
   }
 
   /// This function should be called when [`GossipsubConfig::validate_messages()`] is `true` after
