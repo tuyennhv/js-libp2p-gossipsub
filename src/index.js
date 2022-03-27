@@ -747,6 +747,12 @@ class Gossipsub extends libp2p_1.EventEmitter {
         return { code: types_1.MessageStatus.valid, msgIdStr, msg };
     }
     /**
+     * Return score of a peer.
+     */
+    getScore(peerId) {
+        return this.score.score(peerId);
+    }
+    /**
      * Send an rpc object to a peer with subscriptions
      */
     sendSubscriptions(toPeer, topics, subscribe) {
@@ -1380,7 +1386,7 @@ class Gossipsub extends libp2p_1.EventEmitter {
         this.metrics?.onForwardMsg(rawMsg.topic, tosend.size);
     }
     /**
-     * App layer publishes a message to peers.
+     * App layer publishes a message to peers, return number of peers this message is published to
      * Note: `async` due to crypto only if `StrictSign`, otherwise it's a sync fn.
      *
      * For messages not from us, this class uses `forwardMessage`.
@@ -1430,6 +1436,7 @@ class Gossipsub extends libp2p_1.EventEmitter {
             // TODO: Add option to switch between emit per topic or all messages in one
             super.emit(topic, msg);
         }
+        return tosend.size;
     }
     /// This function should be called when [`GossipsubConfig::validate_messages()`] is `true` after
     /// the message got validated by the caller. Messages are stored in the ['Memcache'] and

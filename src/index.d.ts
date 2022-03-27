@@ -243,6 +243,10 @@ export default class Gossipsub extends EventEmitter {
      */
     validateReceivedMessage(propagationSource: PeerId, rpcMsg: RPC.IMessage): Promise<ReceivedMessageResult>;
     /**
+     * Return score of a peer.
+     */
+    getScore(peerId: PeerIdStr): number;
+    /**
      * Send an rpc object to a peer with subscriptions
      */
     private sendSubscriptions;
@@ -325,12 +329,12 @@ export default class Gossipsub extends EventEmitter {
      */
     private forwardMessage;
     /**
-     * App layer publishes a message to peers.
+     * App layer publishes a message to peers, return number of peers this message is published to
      * Note: `async` due to crypto only if `StrictSign`, otherwise it's a sync fn.
      *
      * For messages not from us, this class uses `forwardMessage`.
      */
-    publish(topic: TopicStr, data: Uint8Array): Promise<void>;
+    publish(topic: TopicStr, data: Uint8Array): Promise<number>;
     reportMessageValidationResult(msgId: MsgIdStr, propagationSource: PeerId, acceptance: MessageAcceptance): void;
     /**
      * Sends a GRAFT message to a peer
