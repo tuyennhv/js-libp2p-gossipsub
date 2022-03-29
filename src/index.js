@@ -1676,6 +1676,7 @@ class Gossipsub extends libp2p_1.EventEmitter {
      * Make a PRUNE control message for a peer in a topic
      */
     async makePrune(id, topic, doPX) {
+        this.score.prune(id, topic);
         if (this.peers.get(id).protocol === constants.GossipsubIDv10) {
             // Gossipsub v1.0 -- no backoff, the peer won't be able to parse it anyway
             return {
