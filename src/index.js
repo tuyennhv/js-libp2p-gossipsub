@@ -255,8 +255,6 @@ class Gossipsub extends libp2p_1.EventEmitter {
         this.log('starting');
         // Incoming streams
         // Called after a peer dials us
-        // TODO
-        // const registrarHandlerId = this.registrar.handle(this.multicodecs, this.onIncomingStream.bind(this))
         this.registrar.handle(this.multicodecs, this.onIncomingStream.bind(this));
         // # How does Gossipsub interact with libp2p? Rough guide from Mar 2022
         //
@@ -289,7 +287,6 @@ class Gossipsub extends libp2p_1.EventEmitter {
         // Then, run heartbeat every `heartbeatInterval` offset by `GossipsubHeartbeatInitialDelay`
         this.status = {
             code: GossipStatusCode.started,
-            registrarHandlerId: 'TODO',
             registrarTopologyId,
             heartbeatTimeout: heartbeatTimeout,
             hearbeatStartMs: Date.now() + constants.GossipsubHeartbeatInitialDelay
@@ -315,8 +312,6 @@ class Gossipsub extends libp2p_1.EventEmitter {
         this.status = { code: GossipStatusCode.stopped };
         // unregister protocol and handlers
         this.registrar.unregister(registrarTopologyId);
-        // TODO: Uncomment on new libp2p version
-        // this.registrar.unregister(registrarHandlerId)
         this.log('stopping');
         for (const peerStreams of this.peers.values()) {
             peerStreams.close();
@@ -731,7 +726,6 @@ class Gossipsub extends libp2p_1.EventEmitter {
                 acceptance = await topicValidator(msg.topic, msg, propagationSource);
             }
             catch (e) {
-                // TODO: Handle error for backwards compatibility
                 const errCode = e.code;
                 if (errCode === constants.ERR_TOPIC_VALIDATOR_IGNORE)
                     acceptance = types_1.MessageAcceptance.Ignore;
@@ -1349,7 +1343,6 @@ class Gossipsub extends libp2p_1.EventEmitter {
                         const newFanoutPeers = this.getRandomGossipPeers(topic, this.opts.D, (id) => {
                             return this.score.score(id) >= this.opts.scoreThresholds.publishThreshold;
                         });
-                        // TODO: Should we check for > 0 here? libp2p-rust does not
                         if (newFanoutPeers.size > 0) {
                             this.fanout.set(topic, newFanoutPeers);
                             newFanoutPeers.forEach((peer) => {
@@ -1465,7 +1458,6 @@ class Gossipsub extends libp2p_1.EventEmitter {
                 const { message: rawMsg, originatingPeers } = cacheEntry;
                 // message is fully validated inform peer_score
                 this.score.deliverMessage(propagationSource.toB58String(), msgId, rawMsg.topic);
-                // TODO: Don't forward to `originatingPeers`
                 this.forwardMessage(msgId, cacheEntry.message, propagationSource.toB58String(), originatingPeers);
                 this.metrics?.onReportValidation(rawMsg.topic, acceptance);
             }
@@ -1741,6 +1733,7 @@ class Gossipsub extends libp2p_1.EventEmitter {
         this.clearBackoff();
         // clean up peerhave/iasked counters
         this.peerhave.clear();
+        this.metrics?.cacheSize.set({ cache: 'iasked' }, this.iasked.size);
         this.iasked.clear();
         // apply IWANT request penalties
         this.applyIwantPenalties();
@@ -1759,8 +1752,7 @@ class Gossipsub extends libp2p_1.EventEmitter {
             // prune/graft helper functions (defined per topic)
             const prunePeer = (id, reason) => {
                 this.log('HEARTBEAT: Remove mesh link to %s in %s', id, topic);
-                // update peer score
-                this.score.prune(id, topic);
+                // no need to update peer score here as we do it in makePrune
                 // add prune backoff record
                 this.addBackoff(id, topic);
                 // remove peer from mesh
@@ -2000,8 +1992,6 @@ class Gossipsub extends libp2p_1.EventEmitter {
         metrics.cacheSize.set({ cache: 'gossip' }, this.gossip.size);
         metrics.cacheSize.set({ cache: 'control' }, this.control.size);
         metrics.cacheSize.set({ cache: 'peerhave' }, this.peerhave.size);
-        // TODO: This ones get cleared every heartbeat, track there
-        metrics.cacheSize.set({ cache: 'iasked' }, this.iasked.size);
         metrics.cacheSize.set({ cache: 'outbound' }, this.outbound.size);
         // 2D nested data structure
         let backoffSize = 0;

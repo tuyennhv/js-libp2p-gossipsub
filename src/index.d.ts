@@ -68,6 +68,13 @@ export declare type GossipsubOpts = GossipsubOptsSpec & {
     /** Prefix tag for debug logs */
     debugName?: string;
 };
+export declare type GossipsubEvents = {
+    'gossipsub:message': {
+        propagationSource: PeerId;
+        msgId: MsgIdStr;
+        msg: GossipsubMessage;
+    };
+};
 interface GossipOptions extends GossipsubOpts {
     scoreParams: PeerScoreParams;
     scoreThresholds: PeerScoreThresholds;
