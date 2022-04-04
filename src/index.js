@@ -672,17 +672,17 @@ class Gossipsub extends libp2p_1.EventEmitter {
      */
     async validateReceivedMessage(propagationSource, rpcMsg) {
         this.metrics?.onMsgRecvPreValidation(rpcMsg.topic);
-        // Perform basic validation on message and convert to RawGossipsubMessage for fastMsgIdFn()
-        const validationResult = await (0, buildRawMessage_1.validateToRawMessage)(this.globalSignaturePolicy, rpcMsg);
-        if (!validationResult.valid) {
-            return { code: types_1.MessageStatus.invalid, reason: types_1.RejectReason.Error, error: validationResult.error };
-        }
         // Fast message ID stuff
         const fastMsgIdStr = this.fastMsgIdFn?.(rpcMsg);
         const msgIdCached = fastMsgIdStr && this.fastMsgIdCache?.get(fastMsgIdStr);
         if (msgIdCached) {
             // This message has been seen previously. Ignore it
             return { code: types_1.MessageStatus.duplicate, msgId: msgIdCached };
+        }
+        // Perform basic validation on message and convert to RawGossipsubMessage for fastMsgIdFn()
+        const validationResult = await (0, buildRawMessage_1.validateToRawMessage)(this.globalSignaturePolicy, rpcMsg);
+        if (!validationResult.valid) {
+            return { code: types_1.MessageStatus.invalid, reason: types_1.RejectReason.Error, error: validationResult.error };
         }
         // Try and perform the data transform to the message. If it fails, consider it invalid.
         let data;
