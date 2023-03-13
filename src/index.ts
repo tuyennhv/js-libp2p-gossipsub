@@ -1087,6 +1087,7 @@ export class GossipSub extends EventEmitter<GossipsubEvents> implements PubSub<G
    */
   private async handleReceivedMessage(from: PeerId, rpcMsg: RPC.IMessage): Promise<void> {
     this.metrics?.onMsgRecvPreValidation(rpcMsg.topic)
+    const fromPeer = from.toString()
 
     const validationResult = await this.validateReceivedMessage(from, rpcMsg)
 
@@ -1096,7 +1097,7 @@ export class GossipSub extends EventEmitter<GossipsubEvents> implements PubSub<G
     switch (validationResult.code) {
       case MessageStatus.duplicate:
         // Report the duplicate
-        this.score.duplicateMessage(from.toString(), validationResult.msgIdStr, rpcMsg.topic)
+        this.score.duplicateMessage(fromPeer, validationResult.msgIdStr, rpcMsg.topic)
         // due to the collision of fastMsgIdFn, 2 different messages may end up the same fastMsgId
         // so we need to also mark the duplicate message as delivered or the promise is not resolved
         // and peer gets penalized. See https://github.com/ChainSafe/js-libp2p-gossipsub/pull/385
@@ -1104,7 +1105,7 @@ export class GossipSub extends EventEmitter<GossipsubEvents> implements PubSub<G
         if (waitingTime != null && waitingTime > 0) {
           this.log(`Received duplicate message ${validationResult.msgIdStr} from ${from} after ${waitingTime}ms`)
         }
-        this.mcache.observeDuplicate(validationResult.msgIdStr, from.toString())
+        this.mcache.observeDuplicate(validationResult.msgIdStr, fromPeer)
         return
 
       case MessageStatus.invalid:
@@ -1114,10 +1115,10 @@ export class GossipSub extends EventEmitter<GossipsubEvents> implements PubSub<G
         // Reject the original source, and any duplicates we've seen from other peers.
         if (validationResult.msgIdStr) {
           const msgIdStr = validationResult.msgIdStr
-          this.score.rejectMessage(from.toString(), msgIdStr, rpcMsg.topic, validationResult.reason)
+          this.score.rejectMessage(fromPeer, msgIdStr, rpcMsg.topic, validationResult.reason)
           this.gossipTracer.rejectMessage(msgIdStr, validationResult.reason)
         } else {
-          this.score.rejectInvalidMessage(from.toString(), rpcMsg.topic)
+          this.score.rejectInvalidMessage(fromPeer, rpcMsg.topic)
         }
 
         this.metrics?.onMsgRecvInvalid(rpcMsg.topic, validationResult)
@@ -1130,6 +1131,11 @@ export class GossipSub extends EventEmitter<GossipsubEvents> implements PubSub<G
         waitingTime = this.gossipTracer.deliverMessage(validationResult.messageId.msgIdStr)
         if (waitingTime != null && waitingTime > 0) {
           this.log(`Received valid message ${validationResult.messageId.msgIdStr} from ${from} after ${waitingTime}ms`)
+        }
+
+        if (!this.mesh.get(rpcMsg.topic)?.has(fromPeer)) {
+          // peer is not part of mesh, should be a responded Iwant
+          this.log(`Received responded Iwant for message id ${validationResult.messageId.msgIdStr} from ${fromPeer}`)
         }
 
         // Add the message to our memcache
