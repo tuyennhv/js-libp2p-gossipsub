@@ -1383,7 +1383,9 @@ export class GossipSub extends EventEmitter<GossipsubEvents> implements PubSub<G
       return []
     }
 
-    let iask = iwant.size
+    // let iask = iwant.size
+    // Nimbus only response 25 first message ids
+    let iask = Math.min(25, iwant.size)
     if (iask + iasked > constants.GossipsubMaxIHaveLength) {
       iask = constants.GossipsubMaxIHaveLength - iasked
     }
