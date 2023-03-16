@@ -1295,6 +1295,7 @@ export class GossipSub extends EventEmitter<GossipsubEvents> implements PubSub<G
         this.gossipTracer.addPromise(id, iwantMessageIds)
       } else {
         this.metrics?.iwantPromiseUntracked.inc(1)
+        this.log(`Failed sendRpc, do not track promise for peer ${id}`)
       }
     }
   }
