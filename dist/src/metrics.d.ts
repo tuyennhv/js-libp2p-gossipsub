@@ -316,6 +316,7 @@ export declare function getMetrics(register: MetricsRegister, topicStrToLabel: T
     iwantMessagePruned: Gauge<LabelsGeneric>;
     /** Histogram of delivery time of resolved IWANT promises */
     iwantPromiseDeliveryTime: Histogram<LabelsGeneric>;
+    iwantPromiseUntracked: Gauge<LabelsGeneric>;
     /** Unbounded cache sizes */
     cacheSize: Gauge<{
         cache: string;

@@ -880,7 +880,17 @@ export class GossipSub extends EventEmitter {
         if (!iwant.length && !ihave.length && !prune.length) {
             return;
         }
-        this.sendRpc(id, { messages: ihave, control: { iwant, prune } });
+        const sent = this.sendRpc(id, { messages: ihave, control: { iwant, prune } });
+        const iwantMessageIds = iwant[0]?.messageIDs;
+        if (iwantMessageIds) {
+            if (sent) {
+                this.gossipTracer.addPromise(id, iwantMessageIds);
+            }
+            else {
+                this.metrics?.iwantPromiseUntracked.inc(1);
+                this.log(`Failed sendRpc, do not track promise for peer ${id}`);
+            }
+        }
     }
     /**
      * Whether to accept a message from a peer
@@ -970,8 +980,9 @@ export class GossipSub extends EventEmitter {
         // truncate to the messages we are actually asking for and update the iasked counter
         iwantList = iwantList.slice(0, iask);
         this.iasked.set(id, iasked + iask);
-        this.gossipTracer.addPromise(id, iwantList);
-        this.log(`IHAVE: Asking from peers ${id} message id ${iwantList.map((msgId) => this.msgIdToStrFn(msgId)).join(' ')}`);
+        // do not add promise here until a successful sendRpc()
+        // this.gossipTracer.addPromise(id, iwantList)
+        this.log(`IHAVE: maybe asking from peers ${id} message id ${iwantList.map((msgId) => this.msgIdToStrFn(msgId)).join(' ')}`);
         return [
             {
                 messageIDs: iwantList

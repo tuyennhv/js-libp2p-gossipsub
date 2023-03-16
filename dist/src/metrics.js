@@ -397,6 +397,10 @@ export function getMetrics(register, topicStrToLabel, opts) {
                 4 * opts.gossipPromiseExpireSec
             ]
         }),
+        iwantPromiseUntracked: register.gauge({
+            name: 'gossip_iwant_promise_untracked',
+            help: 'Total count of untracked IWANT promise'
+        }),
         /* Data structure sizes */
         /** Unbounded cache sizes */
         cacheSize: register.gauge({
