@@ -2057,6 +2057,10 @@ export class GossipSub extends EventEmitter<GossipsubEvents> implements PubSub<G
     }
   }
 
+  /**
+   * Emit messages to the consumer.
+   * Child class could overwrite this method to handle messages without disturbing the event loop.
+   */
   onGossipsubMessage(from: PeerId, msgIdStr: string, msg: Message): void {
     const isFromSelf = this.components.peerId.equals(from)
 
