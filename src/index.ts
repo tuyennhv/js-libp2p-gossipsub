@@ -1054,7 +1054,7 @@ export class GossipSub extends EventEmitter<GossipsubEvents> implements PubSub<G
    * Handles a newly received message from an RPC.
    * May forward to all peers in the mesh.
    */
-  private async handleReceivedMessage(from: PeerId, rpcMsg: RPC.IMessage): Promise<void> {
+  public async handleReceivedMessage(from: PeerId, rpcMsg: RPC.IMessage): Promise<void> {
     this.metrics?.onMsgRecvPreValidation(rpcMsg.topic)
 
     const validationResult = await this.validateReceivedMessage(from, rpcMsg)
