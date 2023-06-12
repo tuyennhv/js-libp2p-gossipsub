@@ -2103,7 +2103,7 @@ export class GossipSub extends EventEmitter<GossipsubEvents> implements PubSub<G
    *
    * This should only be called once per message.
    */
-  reportMessageValidationResult(msgId: MsgIdStr, propagationSource: PeerId, acceptance: TopicValidatorResult): void {
+  reportMessageValidationResult(msgId: MsgIdStr, propagationSource: PeerIdStr, acceptance: TopicValidatorResult): void {
     if (acceptance === TopicValidatorResult.Accept) {
       const cacheEntry = this.mcache.validate(msgId)
       this.metrics?.onReportValidationMcacheHit(cacheEntry !== null)
@@ -2111,9 +2111,9 @@ export class GossipSub extends EventEmitter<GossipsubEvents> implements PubSub<G
       if (cacheEntry != null) {
         const { message: rawMsg, originatingPeers } = cacheEntry
         // message is fully validated inform peer_score
-        this.score.deliverMessage(propagationSource.toString(), msgId, rawMsg.topic)
+        this.score.deliverMessage(propagationSource, msgId, rawMsg.topic)
 
-        this.forwardMessage(msgId, cacheEntry.message, propagationSource.toString(), originatingPeers)
+        this.forwardMessage(msgId, cacheEntry.message, propagationSource, originatingPeers)
         this.metrics?.onReportValidation(rawMsg.topic, acceptance)
       }
       // else, Message not in cache. Ignoring forwarding
@@ -2130,7 +2130,7 @@ export class GossipSub extends EventEmitter<GossipsubEvents> implements PubSub<G
 
         // Tell peer_score about reject
         // Reject the original source, and any duplicates we've seen from other peers.
-        this.score.rejectMessage(propagationSource.toString(), msgId, rawMsg.topic, rejectReason)
+        this.score.rejectMessage(propagationSource, msgId, rawMsg.topic, rejectReason)
         for (const peer of originatingPeers) {
           this.score.rejectMessage(peer, msgId, rawMsg.topic, rejectReason)
         }
