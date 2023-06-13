@@ -387,6 +387,10 @@ export class GossipSub extends EventEmitter<GossipsubEvents> implements PubSub<G
     cancel: () => void
   } | null = null
 
+  private lastYield = 0
+  // TODO: just for testing, make this configurable
+  private yieldEveryMs = 50
+
   constructor(components: GossipSubComponents, options: Partial<GossipsubOpts> = {}) {
     super()
 
@@ -919,33 +923,45 @@ export class GossipSub extends EventEmitter<GossipsubEvents> implements PubSub<G
    */
   private async pipePeerReadStream(peerId: PeerId, stream: AsyncIterable<Uint8ArrayList>): Promise<void> {
     try {
-      await pipe(stream, async (source) => {
-        for await (const data of source) {
-          try {
-            // TODO: Check max gossip message size, before decodeRpc()
-            const rpcBytes = data.subarray()
-            // Note: This function may throw, it must be wrapped in a try {} catch {} to prevent closing the stream.
-            // TODO: What should we do if the entire RPC is invalid?
-            const rpc = decodeRpc(rpcBytes, this.decodeRpcLimits)
-
-            this.metrics?.onRpcRecv(rpc, rpcBytes.length)
-
-            // Since processRpc may be overridden entirely in unsafe ways,
-            // the simplest/safest option here is to wrap in a function and capture all errors
-            // to prevent a top-level unhandled exception
-            // This processing of rpc messages should happen without awaiting full validation/execution of prior messages
+      await pipe(
+        stream,
+        (source) => this.decodeRpc(source),
+        async (source) => {
+          for await (const rpc of source) {
             if (this.opts.awaitRpcHandler) {
               await this.handleReceivedRpc(peerId, rpc)
             } else {
               this.handleReceivedRpc(peerId, rpc).catch((err) => this.log(err))
             }
-          } catch (e) {
-            this.log(e as Error)
           }
         }
-      })
+      )
     } catch (err) {
       this.handlePeerReadStreamError(err as Error, peerId)
+    }
+  }
+
+  // eslint-disable-next-line generator-star-spacing
+  private async *decodeRpc(source: AsyncIterable<Uint8ArrayList>): AsyncGenerator<IRPC> {
+    for await (const data of source) {
+      // TODO: handle yieldEveryMs = null
+      if (Date.now() - this.lastYield > this.yieldEveryMs) {
+        await new Promise((resolve) => setTimeout(resolve, 0))
+      }
+      try {
+        // TODO: Check max gossip message size, before decodeRpc()
+        const rpcBytes = data.subarray()
+        // Note: This function may throw, it must be wrapped in a try {} catch {} to prevent closing the stream.
+        // TODO: What should we do if the entire RPC is invalid?
+        const rpc = decodeRpc(rpcBytes, this.decodeRpcLimits)
+        this.metrics?.onRpcRecv(rpc, rpcBytes.length)
+
+        yield rpc
+        this.lastYield = Date.now()
+      } catch (e) {
+        this.metrics?.onRpcDataError()
+        this.log(e as Error)
+      }
     }
   }
 
