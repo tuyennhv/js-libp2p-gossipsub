@@ -925,7 +925,7 @@ export class GossipSub extends EventEmitter<GossipsubEvents> implements PubSub<G
     try {
       await pipe(
         stream,
-        (source) => this.decodeRpc(source),
+        (source) => this.decodeRpc(source as AsyncIterable<Uint8ArrayList>),
         async (source) => {
           for await (const rpc of source) {
             if (this.opts.awaitRpcHandler) {
@@ -959,7 +959,6 @@ export class GossipSub extends EventEmitter<GossipsubEvents> implements PubSub<G
         yield rpc
         this.lastYield = Date.now()
       } catch (e) {
-        this.metrics?.onRpcDataError()
         this.log(e as Error)
       }
     }
