@@ -1,4 +1,4 @@
-import type { IRPC, RPC } from './rpc.js'
+import type { RPC } from './rpc.js'
 import protobuf from 'protobufjs/minimal.js'
 
 export type DecodeRPCLimits = {
@@ -22,7 +22,7 @@ export const defaultDecodeRpcLimits: DecodeRPCLimits = {
 /**
  * Copied code from src/message/rpc.cjs but with decode limits to prevent OOM attacks
  */
-export function decodeRpc(bytes: Uint8Array, opts: DecodeRPCLimits): IRPC {
+export function decodeRpc(bytes: Uint8Array, opts: DecodeRPCLimits): RPC {
   // Mutate to use the option as stateful counter. Must limit the total count of messageIDs across all IWANT, IHAVE
   // else one count put 100 messageIDs into each 100 IWANT and "get around" the limit
   opts = { ...opts }
@@ -31,7 +31,7 @@ export function decodeRpc(bytes: Uint8Array, opts: DecodeRPCLimits): IRPC {
   const l = bytes.length
 
   const c = l === undefined ? r.len : r.pos + l
-  const m: IRPC = {}
+  const m: RPC = {}
   while (r.pos < c) {
     const t = r.uint32()
     switch (t >>> 3) {
