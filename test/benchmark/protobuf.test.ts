@@ -5,8 +5,7 @@ describe('protobuf', function () {
   this.timeout(0)
   setBenchOpts({
     maxMs: 200 * 1000,
-    minMs: 120 * 1000,
-    minRuns: 200
+    minMs: 60 * 1000
   })
 
   const rpc: RPC = {
@@ -27,20 +26,24 @@ describe('protobuf', function () {
 
   const bytes = RPC.encode(rpc)
 
-  // console.log('@@@ encoded to', Buffer.from(bytes.slice()).toString('hex'), 'length', bytes.length)
+  const runsFactor = 100
 
   itBench({
-    id: 'decode Attestation message using protobufjs',
+    id: 'decode Attestation message using protons 5.1.0',
     fn: () => {
-      RPC.decode(bytes)
+      for (let i = 0; i < runsFactor; i++) {
+        RPC.decode(bytes)
+      }
     },
     runsFactor: 100
   })
 
   itBench({
-    id: 'encode Attestation message using protobufjs',
+    id: 'encode Attestation message using protons 5.1.0',
     fn: () => {
-      RPC.encode(rpc)
+      for (let i = 0; i < runsFactor; i++) {
+        RPC.encode(rpc)
+      }
     },
     runsFactor: 100
   })
