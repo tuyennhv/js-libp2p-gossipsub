@@ -77,7 +77,8 @@ import { removeFirstNItemsFromSet, removeItemsFromSet } from './utils/set.js'
 import { pushable } from 'it-pushable'
 import { InboundStream, OutboundStream } from './stream.js'
 import { Uint8ArrayList } from 'uint8arraylist'
-import { decodeRpc, DecodeRPCLimits, defaultDecodeRpcLimits } from './message/decodeRpc.js'
+// import { DecodeRPCLimits, defaultDecodeRpcLimits } from './message/decodeRpc.js'
+import { DecodeRPCLimits } from './message/decodeRpc.js'
 import { ConnectionManager } from '@libp2p/interface-connection-manager'
 import { Peer, PeerStore } from '@libp2p/interface-peer-store'
 import { Multiaddr } from '@multiformats/multiaddr'
@@ -379,7 +380,7 @@ export class GossipSub extends EventEmitter<GossipsubEvents> implements PubSub<G
 
   // Options
   readonly opts: Required<GossipOptions>
-  private readonly decodeRpcLimits: DecodeRPCLimits
+  // private readonly decodeRpcLimits: DecodeRPCLimits
 
   private readonly metrics: Metrics | null
   private status: GossipStatus = { code: GossipStatusCode.stopped }
@@ -426,7 +427,7 @@ export class GossipSub extends EventEmitter<GossipsubEvents> implements PubSub<G
     }
 
     this.components = components
-    this.decodeRpcLimits = opts.decodeRpcLimits ?? defaultDecodeRpcLimits
+    // this.decodeRpcLimits = opts.decodeRpcLimits ?? defaultDecodeRpcLimits
 
     this.globalSignaturePolicy = opts.globalSignaturePolicy ?? StrictSign
 
@@ -936,7 +937,8 @@ export class GossipSub extends EventEmitter<GossipsubEvents> implements PubSub<G
             const rpcBytes = data.subarray()
             // Note: This function may throw, it must be wrapped in a try {} catch {} to prevent closing the stream.
             // TODO: What should we do if the entire RPC is invalid?
-            const rpc = decodeRpc(rpcBytes, this.decodeRpcLimits)
+            // const rpc = decodeRpc(rpcBytes, this.decodeRpcLimits)
+            const rpc = RPC.decode(rpcBytes)
 
             this.metrics?.onRpcRecv(rpc, rpcBytes.length)
 
