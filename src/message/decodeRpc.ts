@@ -1,4 +1,5 @@
-import { reader as r, type Reader } from 'protons-runtime'
+import protobuf from 'protobufjs/minimal.js'
+import { type Reader } from 'protons-runtime'
 import { RPC } from './rpc.js'
 
 export interface DecodeRPCLimits {
@@ -27,7 +28,8 @@ export function decodeRpc (bytes: Uint8Array, opts: DecodeRPCLimits): RPC {
   // else one count put 100 messageIDs into each 100 IWANT and "get around" the limit
   opts = { ...opts }
 
-  const reader = r(bytes)
+  // const reader = r(bytes)
+  const reader = protobuf.Reader.create(bytes) as unknown as Reader
   const obj: any = {
     subscriptions: [],
     messages: []
